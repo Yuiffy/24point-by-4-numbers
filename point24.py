@@ -12,7 +12,7 @@ def do_one_cal(a,b,sa,sb,op_num):
 
 def dfs(list, ret, s, sum):
     if(len(list)==0):
-        if sum==24:
+        if abs(sum - 24) < 1e-10:
             ret+=[s[1:-1]]
         return
     for i in range(len(list)):
@@ -27,11 +27,24 @@ def dfs(list, ret, s, sum):
                 continue
             dfs(last, ret, s2, sum2)
 
+def del2fromlist(list,i,j):
+    ii = i
+    jj = j
+    if (ii > jj):
+        ii = j
+        jj = i
+    last = list[0:ii] + list[ii + 1:jj] + list[jj + 1:len(list)]  # get the remind numbers
+    return last
 def cal24bysteps(list):
     ret = []
     for i in range(len(list)):
-        last = list[0:i] + list[i + 1:len(list)]
-        dfs(last, ret, str(list[i]), list[i])
+        for j in range(len(list)):
+            if(i==j):
+                continue
+            last = del2fromlist(list,i,j)
+            for op1 in range(4):
+                sm,s = do_one_cal(list[i],list[j],str(list[i]),str(list[j]),op1)
+            dfs(last, ret, s, sm)
     return ret
 
 def cal24by2items(list):
@@ -40,16 +53,15 @@ def cal24by2items(list):
         for j in range(len(list)):
             if(i==j):
                 continue
-            ii = i
-            jj = j
-            if(ii>jj):
-                ii=j
-                jj=i
-            last = list[0:ii] + list[ii+1:jj] + list[jj+1:len(list)] #get the remind numbers
+            last = del2fromlist(list, i, j)
             for op1 in range(4):
+                if(op1<=1) and (i>j):
+                    continue
                 l,ls = do_one_cal(list[i],list[j],str(list[i]),str(list[j]),op1)
                 for op2 in range(4):
-                    for k in range(2):
+                    ma = 2
+                    if(op2<=1): ma=1
+                    for k in range(ma):
                         q1 = k
                         q2 = k^1
                         r, rs = do_one_cal(last[q1], last[q2], str(last[q1]), str(last[q2]), op2)
@@ -59,7 +71,7 @@ def cal24by2items(list):
                             ans, anss = do_one_cal(l,r,ls,rs,op3)
                             if(anss==None):
                                 continue
-                            if(ans==24):
+                            if abs(ans - 24) < 1e-10:
                                 ret+=[anss[1:-1]]
     return ret
 
