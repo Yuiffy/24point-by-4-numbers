@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 def do_one_cal(a,b,sa,sb,op_num):
     if(op_num==0):
         return a+b, '('+sa+'+'+sb+')'
@@ -10,54 +12,54 @@ def do_one_cal(a,b,sa,sb,op_num):
             return 0,None
         return 1.0*a/b,  '('+sa+'/'+sb+')'
 
-def dfs(list, ret, s, sum):
-    if(len(list)==0):
+def dfs(numberList, ret, s, sum):
+    if(len(numberList)==0):
         if abs(sum - 24) < 1e-10:
             ret+=[s[1:-1]]
         return
-    for i in range(len(list)):
+    for i in range(len(numberList)):
         for j in range(4):
-            last = list[0:i]+list[i+1:len(list)]
-            sum2,s2 = do_one_cal(sum, list[i], s, str(list[i]), j)
+            last = numberList[0:i]+numberList[i+1:len(numberList)]
+            sum2,s2 = do_one_cal(sum, numberList[i], s, str(numberList[i]), j)
             if(s2==None):
                 continue
             dfs(last, ret, s2, sum2)
-            sum2,s2 = do_one_cal(list[i],sum,  str(list[i]),s, j)
+            sum2,s2 = do_one_cal(numberList[i],sum,  str(numberList[i]),s, j)
             if(s2==None):
                 continue
             dfs(last, ret, s2, sum2)
 
-def del2fromlist(list,i,j):
+def del2fromnumberList(numberList,i,j):
     ii = i
     jj = j
     if (ii > jj):
         ii = j
         jj = i
-    last = list[0:ii] + list[ii + 1:jj] + list[jj + 1:len(list)]  # get the remind numbers
+    last = numberList[0:ii] + numberList[ii + 1:jj] + numberList[jj + 1:len(numberList)]  # get the remind numbers
     return last
-def cal24bysteps(list):
+def cal24bysteps(numberList):
     ret = []
-    for i in range(len(list)):
-        for j in range(len(list)):
+    for i in range(len(numberList)):
+        for j in range(len(numberList)):
             if(i==j):
                 continue
-            last = del2fromlist(list,i,j)
+            last = del2fromnumberList(numberList,i,j)
             for op1 in range(4):
-                sm,s = do_one_cal(list[i],list[j],str(list[i]),str(list[j]),op1)
-            dfs(last, ret, s, sm)
+                sm,s = do_one_cal(numberList[i],numberList[j],str(numberList[i]),str(numberList[j]),op1)
+                dfs(last, ret, s, sm)
     return ret
 
-def cal24by2items(list):
+def cal24by2items(numberList):
     ret = []
-    for i in range(len(list)):
-        for j in range(len(list)):
+    for i in range(len(numberList)):
+        for j in range(len(numberList)):
             if(i==j):
                 continue
-            last = del2fromlist(list, i, j)
+            last = del2fromnumberList(numberList, i, j)
             for op1 in range(4):
                 if(op1<=1) and (i>j):
                     continue
-                l,ls = do_one_cal(list[i],list[j],str(list[i]),str(list[j]),op1)
+                l,ls = do_one_cal(numberList[i],numberList[j],str(numberList[i]),str(numberList[j]),op1)
                 for op2 in range(4):
                     ma = 2
                     if(op2<=1): ma=1
@@ -75,13 +77,14 @@ def cal24by2items(list):
                                 ret+=[anss[1:-1]]
     return ret
 
-def cal24(list):
+def cal24(numberList):
     ret = []
-    ret += cal24bysteps(list)
-    ret += cal24by2items(list)
+    ret += cal24bysteps(numberList)
+    ret += cal24by2items(numberList)
+    ret = list(OrderedDict.fromkeys(ret))
     return ret
 
 if __name__ == '__main__':
-    list = map(int, raw_input().split())
-    print list
-    print cal24(list)
+    numberList = map(int, raw_input().split())
+    print numberList
+    print cal24(numberList)
