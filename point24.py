@@ -46,6 +46,8 @@ def cal24bysteps(numberList):
             last = del2fromnumberList(numberList,i,j)
             for op1 in range(4):
                 sm,s = do_one_cal(numberList[i],numberList[j],str(numberList[i]),str(numberList[j]),op1)
+                if(s==None):
+                    continue;
                 dfs(last, ret, s, sm)
     return ret
 
